@@ -1,4 +1,4 @@
-package ph.edu.cibertec.veterinaria.servicios;
+package ph.edu.cibertec.veterinaria.controladores;
 
 import java.util.Arrays;
 import java.util.List;
