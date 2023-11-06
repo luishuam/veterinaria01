@@ -1,47 +1,105 @@
 package ph.edu.cibertec.veterinaria.controladores;
 
-import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ph.edu.cibertec.veterinaria.entidades.Mascota;
+import ph.edu.cibertec.veterinaria.entidades.MascotaRequest;
 import ph.edu.cibertec.veterinaria.repositorios.MascotaRepository;
 
 //crear rest
 @RestController
 @AllArgsConstructor
+@RequestMapping("mascotas")
 public class MascotaController {
 
-    MascotaRepository mascotaRepository; // if I need that it works, DEPENDENCY
+    MascotaRepository mascotaRepository;
+
+    // public MascotaController(MascotaRepository mascotaRepository) {
+    // this.mascotaRepository = mascotaRepository;
+    // // o usar ^^ @AllArgsConstructor
+    // // Evitar usar autowired
+    // }
 
     /* allargsconstructor */
     // MascotaController(MascotaRepository mascotaRepository) {
     // this.mascotaRepository = mascotaRepository;
     // };
 
-    @RequestMapping(method = RequestMethod.GET, path = "obtenerMascotas")
+    // @RequestMapping(method = RequestMethod.GET, path = "mascotas")
+    // public List<Mascota> listarMascotas() {
 
-    public List<Mascota> listarMascotas() {
+    // return mascotaRepository.findAll();
+    // // Mascota tomy = new Mascota();
+    // // tomy.setName("Panchito");
+    // // tomy.setOwner("Arthuro Mendiola");
 
-        return mascotaRepository.findAll();
-        // Mascota tomy = new Mascota();
-        // tomy.setName("Panchito");
-        // tomy.setOwner("Arthuro Mendiola");
+    // // Mascota lupita = new Mascota();
+    // // lupita.setName("Lupita");
+    // // lupita.setOwner("Panchita");
 
-        // Mascota lupita = new Mascota();
-        // lupita.setName("Lupita");
-        // lupita.setOwner("Panchita");
+    // // return Arrays.asList(tomy, lupita);
+    // }
 
-        // return Arrays.asList(tomy, lupita);
-    }
-
-    @GetMapping("obtenerMascotitas")
+    @GetMapping
     public List<Mascota> listarMascotitas() {
         return mascotaRepository.findAll();
     }
+
+    @GetMapping("{id}")
+    public ResponseEntity<Mascota> findById(@PathVariable Long id) {
+
+        // Optional<Mascota> mascotaOptional = mascotaRepository.findById(id);
+        // if (mascotaOptional.isPresent()) {
+        // Mascota mascota = mascotaOptional.get();
+        // return ResponseEntity.ok(mascota);
+        // // 200 ok
+
+        // }
+        // return ResponseEntity.notFound().build();
+        // // not found 404
+        // ^^ codigo de igual funcionamiento
+
+        return ResponseEntity.of(mascotaRepository.findById(id));
+    }
+
+    // registro de mascota, uso de post
+    // request body para obtner datos
+    // primera manera
+    // @PostMapping("mascotas")
+    // public ResponseEntity<Long> registrar(@RequestBody MascotaRequest
+    // mascotaRequest) {
+    // Mascota mascota = new Mascota();
+    // mascota.nombre = mascotaRequest.nombre;
+    // mascota.duenho = mascotaRequest.duenho;
+
+    // Mascota mascotaGuardada = mascotaRepository.save(mascota);
+    // return ResponseEntity.status(201).body(mascotaGuardada.id);
+
+    // }
+
+    @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public Long registrar(@RequestBody @Valid MascotaRequest mascotaRequest) {
+        Mascota mascota = new Mascota();
+        mascota.nombre = mascotaRequest.nombre;
+        mascota.duenho = mascotaRequest.duenho;
+
+        Mascota mascotaGuardada = mascotaRepository.save(mascota);
+        return mascotaGuardada.id;
+
+    }
+
 }

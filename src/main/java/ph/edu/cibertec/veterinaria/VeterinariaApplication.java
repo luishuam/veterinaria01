@@ -1,12 +1,7 @@
 package ph.edu.cibertec.veterinaria;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-
-import ph.edu.cibertec.veterinaria.entidades.Mascota;
-import ph.edu.cibertec.veterinaria.repositorios.MascotaRepository;
 
 @SpringBootApplication
 
