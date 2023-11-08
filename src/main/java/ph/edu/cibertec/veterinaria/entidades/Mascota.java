@@ -17,4 +17,7 @@ public class Mascota {
     public String nombre;
     public String duenho;
 
+    // soft delete
+    Boolean estaEliminado;
+
 }

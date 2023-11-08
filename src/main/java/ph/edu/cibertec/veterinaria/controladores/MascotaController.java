@@ -1,12 +1,17 @@
 package ph.edu.cibertec.veterinaria.controladores;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -53,11 +58,34 @@ public class MascotaController {
     // // return Arrays.asList(tomy, lupita);
     // }
 
+    /*------------------Listar, por nombre %, exact name-------------------------- */
     @GetMapping
-    public List<Mascota> listarMascotitas() {
+    public List<Mascota> findAll(String nombre) {
+
+        if (nombre != null) {
+            return mascotaRepository.buscarMascotaPorNombre(nombre);
+        }
+
         return mascotaRepository.findAll();
     }
 
+    // @GetMapping
+    // public List<Mascota> findExactByNombre(String nombre) {
+
+    // if (nombre != null) {
+    // return mascotaRepository.searchByNombre(nombre);
+    // }
+
+    // return mascotaRepository.findAll();
+    // }
+
+    // @GetMapping
+    // public List<Mascota> listar( ) {
+
+    // return mascotaRepository.findAll();
+    // }
+
+    /*------------------Listar, por id-------------------------- */
     @GetMapping("{id}")
     public ResponseEntity<Mascota> findById(@PathVariable Long id) {
 
@@ -90,6 +118,7 @@ public class MascotaController {
 
     // }
 
+    /*------------------Registrar-------------------------- */
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public Long registrar(@RequestBody @Valid MascotaRequest mascotaRequest) {
@@ -102,4 +131,57 @@ public class MascotaController {
 
     }
 
+    /*--------------- Eliminar por id ------------------------*/
+    @DeleteMapping("{id}")
+    public void eliminarPorId(@PathVariable Long id) {
+        mascotaRepository.deleteById(id);
+        // hard delete
+    }
+
+    /* -----------------------Actualizar por id ------------------------- */
+    @PutMapping("{id}")
+    public ResponseEntity<Mascota> modificar(@PathVariable Long id, @RequestBody @Valid MascotaRequest mascotaRequest) {
+
+        // Optional<Mascota> mascotaOptional = mascotaRepository.findById(id);
+
+        // if (mascotaOptional.isPresent()) {
+        // Mascota mascota = mascotaOptional.get();
+        // mascota.nombre = mascotaRequest.nombre;
+        // mascota.duenho = mascotaRequest.duenho;
+        // mascotaRepository.save(mascota);
+
+        // return ResponseEntity.ok(mascota);
+        // }
+        // return ResponseEntity.notFound().build();
+
+        return mascotaRepository.findById(id).map(mascota -> {
+            mascota.nombre = mascotaRequest.nombre;
+            mascota.duenho = mascotaRequest.duenho;
+            mascotaRepository.save(mascota);
+
+            return ResponseEntity.ok(mascota);
+
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /*--------------------- Patch/parcial no usable/ por id-----------------*/
+    @PatchMapping("{id}")
+    public ResponseEntity<Mascota> modificarParcial(@PathVariable Long id,
+            @RequestBody MascotaRequest mascotaRequest) {
+
+        return mascotaRepository.findById(id).map(mascota -> {
+
+            if (mascotaRequest.nombre != null) {
+                mascota.nombre = mascotaRequest.nombre;
+            }
+            if (mascotaRequest.duenho != null) {
+                mascota.duenho = mascotaRequest.duenho;
+            }
+
+            mascotaRepository.save(mascota);
+
+            return ResponseEntity.ok(mascota);
+
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
