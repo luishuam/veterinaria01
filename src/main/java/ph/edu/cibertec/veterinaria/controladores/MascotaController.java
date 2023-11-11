@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import ph.edu.cibertec.veterinaria.entidades.Mascota;
+import ph.edu.cibertec.veterinaria.entidades.MascotaDto;
 import ph.edu.cibertec.veterinaria.entidades.MascotaRequest;
 import ph.edu.cibertec.veterinaria.repositorios.MascotaRepository;
 
@@ -84,6 +85,21 @@ public class MascotaController {
 
     // return mascotaRepository.findAll();
     // }
+
+    // dto
+
+    @GetMapping("/dto")
+    public List<MascotaDto> listar() {
+
+        return mascotaRepository.findAll().stream().map(mascota -> {
+            MascotaDto dto = new MascotaDto();
+            dto.nombre = mascota.getNombre();
+            dto.estado = mascota.getEstaEliminado();
+
+            return dto;
+
+        }).toList();
+    }
 
     /*------------------Listar, por id-------------------------- */
     @GetMapping("{id}")
